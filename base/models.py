@@ -32,7 +32,7 @@ class Order(models.Model):
     is_complete = models.BooleanField(default=False, null=True, blank=False)
 
     def __str__(self):
-        return f'{self.user} {self.user.id}, is_complete={self.is_complete}, {self.orderitem_set.all()}'
+        return f'{self.user}, is_complete={self.is_complete}, {self.orderitem_set.all()}'
 
     @property
     def get_cart_total(self):
