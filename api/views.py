@@ -99,11 +99,9 @@ def order_view(request):
     try:
         user = models.User.objects.get(id=user_id)
         order = models.Order.objects.get(user=user, is_checked_out=False)
-
-        models.Address.objects.create(user=user, order=order, seat_number=seat_number, carriage_code=carriage_code)
-
         order.is_checked_out = True
         order.save()
+        models.Address.objects.create(user=user, order=order, seat_number=seat_number, carriage_code=carriage_code)
         return Response({'status': 'success'})
     except:
         print('===== order_view (Gagal) =====')
@@ -150,4 +148,31 @@ def my_order_history_view(request):
             })
     except:
         print('===== my_order_history_view (Gagal) =====')
+    return Response({'status': 'failed'})
+
+
+@api_view(['POST'])
+def my_detail_order(request):
+    data = json.loads(request.body)
+    user_id = data['user_id']
+    try:
+        user = models.User.objects.get(id=user_id)
+        order = models.Order.objects.filter(user=user).order_by('-pk')[0]
+        order_serializer = OrderSerializer(order)
+
+        order_items = order.orderitem_set.all()
+        order_item_serializer = OrderItemSerializer(order_items, many=True, context={'request': request})
+
+        address = models.Address.objects.filter(user=user, order=order).first()
+        address_serializer = AddressSerializer(address)
+        return Response({
+            'status': 'success',
+            'data': {
+                'data_order': order_serializer.data,
+                'data_order_item': order_item_serializer.data,
+                'data_address': address_serializer.data 
+                }
+            })
+    except:
+        print('===== my_detail_order_view (Gagal) =====')
     return Response({'status': 'failed'})

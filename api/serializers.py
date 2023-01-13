@@ -27,5 +27,10 @@ class OrderItemSerializer(serializers.ModelSerializer):
 class OrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Order
-        fields = ['get_cart_total', 'get_cart_items']
+        fields = ['get_cart_total', 'get_cart_items', 'date_ordered']
+
+class AddressSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Address
+        fields = '__all__'
 
